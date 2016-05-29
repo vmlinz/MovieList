@@ -4,82 +4,9 @@
  */
 
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  Image,
-  ListView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { AppRegistry, Image, ListView, StyleSheet, Text, View } from 'react-native';
 
 const REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
-
-class Hello extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dataSource: new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-      }),
-      loaded: false,
-    };
-  }
-  render() {
-    if (!this.state.loaded) {
-      return this.renderLoadingView();
-    }
-
-    return this.renderMovieList();
-  }
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  renderMovieList() {
-    return (
-      <ListView
-        dataSource={this.state.dataSource}
-        renderRow={this.renderMovie} 
-        style={styles.listView}
-      />
-    );
-  }
-  renderLoadingView() {
-    return (
-      <View style={styles.container}>
-        <Text>
-          Loading movies
-        </Text>
-      </View>
-    );
-  }
-  renderMovie(movie) {
-    return (
-      <View style={styles.container}>
-        <Image 
-          source={{uri: movie.posters.thumbnail}}
-          style={styles.thumbnail}
-        />
-        <View style={styles.rightContainer}>
-          <Text style={styles.title}>{movie.title}</Text>
-          <Text style={styles.year}>{movie.year}</Text>
-        </View>
-      </View>
-    );
-  }
-  fetchData() {
-    fetch(REQUEST_URL)
-      .then((response) => response.json())
-      .then((jsonData) => {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(jsonData.movies),
-          loaded: true,
-        });
-      })
-      .done();
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -109,5 +36,72 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
 });
+
+
+class Hello extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+      loaded: false,
+    };
+  }
+  componentDidMount() {
+    this.fetchData();
+  }
+  fetchData() {
+    fetch(REQUEST_URL)
+      .then((response) => response.json())
+      .then((jsonData) => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(jsonData.movies),
+          loaded: true,
+        });
+      })
+      .done();
+  }
+  renderMovie(movie) {
+    return (
+      <View style={styles.container}>
+        <Image source={{ uri: movie.posters.thumbnail }} style={styles.thumbnail} />
+        <View style={styles.rightContainer}>
+          <Text style={styles.title}>
+            {movie.title}
+          </Text>
+          <Text style={styles.year}>
+            {movie.year}
+          </Text>
+        </View>
+      </View>
+    );
+  }
+  renderLoadingView() {
+    return (
+      <View style={styles.container}>
+        <Text>
+          Loading movies
+        </Text>
+      </View>
+    );
+  }
+  renderMovieList() {
+    return (
+      <ListView
+        dataSource={this.state.dataSource}
+        renderRow={this.renderMovie}
+        style={styles.listView}
+      />
+    );
+  }
+  render() {
+    if (!this.state.loaded) {
+      return this.renderLoadingView();
+    }
+
+    return this.renderMovieList();
+  }
+}
 
 AppRegistry.registerComponent('Hello', () => Hello);
